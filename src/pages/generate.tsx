@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { type NextPage } from "next";
 import Head from "next/head";
 import { FormGroup } from '~/components/FormGroup'
@@ -8,15 +8,17 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { Button } from "~/components/Button";
 
 const GeneratePage: NextPage = () => {
-    const [form, setForm] = React.useState({
+    const [form, setForm] = useState({
         prompt: "",
     });
-
+    const [imageUrl, setImageUrl] = useState('');
     const session = useSession();
 
+    console.log(session);
     const generateIcon = api.generate.generateIcon.useMutation({
         onSuccess(data) {
-            console.log('mutation successful! ', {data})
+            if (!data.imageUrl) return;
+            setImageUrl(data.imageUrl);
         }
     });
 
@@ -49,8 +51,8 @@ const GeneratePage: NextPage = () => {
             <form className="flex flex-col gap-4"
                 onSubmit={ handleFormSubmit }
             >
-                {isLoggedIn && <Button onClick={ () => signIn().catch(console.error) }>Login</Button>}
-                {!isLoggedIn && <Button onClick={ () => signOut().catch(console.error) }>Logout</Button>}
+                {!isLoggedIn && <Button onClick={ () => signIn().catch(console.error) }>Login</Button>}
+                {isLoggedIn && <Button onClick={ () => signOut().catch(console.error) }>Logout</Button>}
                 <FormGroup>
                     <label>Prompt</label>
                     <Input
@@ -62,6 +64,7 @@ const GeneratePage: NextPage = () => {
                     Submit
                 </Button>
             </form>
+            <img src={imageUrl}/>
         </main>
         </>
     );
