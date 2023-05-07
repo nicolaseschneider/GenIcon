@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { type NextPage } from "next";
 import Head from "next/head";
-import { FormGroup } from '~/components/FormGroup'
+import Image from "next/image";
+import { FormGroup } from '~/components/FormGroup'; 
 import { Input } from '~/components/Input';
 import { api } from "~/utils/api";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -19,6 +20,7 @@ const GeneratePage: NextPage = () => {
         onSuccess(data) {
             if (!data.imageUrl) return;
             setImageUrl(data.imageUrl);
+            setForm({ prompt: '' })
         }
     });
 
@@ -64,7 +66,12 @@ const GeneratePage: NextPage = () => {
                     Submit
                 </Button>
             </form>
-            <img src={imageUrl}/>
+            {imageUrl && <Image 
+                src={imageUrl}
+                alt='Your generated image'
+                width='100'
+                height='100'
+            /> }
         </main>
         </>
     );
