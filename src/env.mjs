@@ -22,6 +22,7 @@ const server = z.object({
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   DALLE_API_KEY: z.string(),
+  MOCK_DALLE: z.string(),
 });
 
 /**
@@ -39,13 +40,14 @@ const client = z.object({
  * @type {Record<keyof z.infer<typeof server> | keyof z.infer<typeof client>, string | undefined>}
  */
 const processEnv = {
-  DATABASE_URL: process.env.DATABASE_URL,
-  NODE_ENV: process.env.NODE_ENV,
-  NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-  NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-  DALLE_API_KEY : process.env.DALLE_API_KEY,
+  DATABASE_URL          : process.env.DATABASE_URL,
+  NODE_ENV              : process.env.NODE_ENV,
+  NEXTAUTH_SECRET       : process.env.NEXTAUTH_SECRET,
+  NEXTAUTH_URL          : process.env.NEXTAUTH_URL,
+  GOOGLE_CLIENT_ID      : process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET  : process.env.GOOGLE_CLIENT_SECRET,
+  DALLE_API_KEY         : process.env.DALLE_API_KEY,
+  MOCK_DALLE            : process.env.MOCK_DALLE,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 

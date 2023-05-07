@@ -9,6 +9,20 @@ import {
 
 import { env } from "~/env.mjs";
 
+const generateIcon = async (prompt: string, openai: OpenAIApi): Promise<string | void> => {
+    if (env.MOCK_DALLE === 'true') {
+        return 'https://static.vecteezy.com/system/resources/previews/018/764/128/original/chatgpt-logo-open-ai-icon-with-chatbot-artificial-intelligence-openai-chatbot-icon-chatgpt-openai-icon-artificial-intelligence-smart-ai-virtual-smart-assistant-bot-free-vector.jpg'
+    } else {
+        const response = await openai.createImage({
+            prompt,
+            n: 1,
+            size: '256x256',
+            response_format: 'url',
+        })
+        return response.data.data[0]?.url;
+    }
+}
+
 export const generateRouter = createTRPCRouter({
     generateIcon: protectedProcedure
     .input(
@@ -45,23 +59,9 @@ export const generateRouter = createTRPCRouter({
         // FETCH REQ TO DALLE API
         console.log(results);
 
-        const response = await openai.createImage({
-            prompt: input.prompt,
-            n: 1,
-            size: '256x256',
-            response_format: 'url',
-        })
-        .catch(e => {
-            if (e.response) {
-                console.log(e.response.status)
-                console.log(e.response.data)
-            } else {
-                console.log(e.message)
-            }
-            
-        })
+       
         
-        const url = response?.data.data[0]?.url;
+        const url = await generateIcon(input.prompt, openai);
         console.log({url})
         return {
             message:"Success",
