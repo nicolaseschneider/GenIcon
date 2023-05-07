@@ -65,13 +65,18 @@ export const generateRouter = createTRPCRouter({
             })
         }  
         const base64Image = await generateIcon(input.prompt, openai);
-        console.log(base64Image);
+        const icon = await ctx.prisma.icon.create({
+            data: {
+                prompt: input.prompt,
+                userId: ctx.session.user.id,
+            }
+        })
 
         await s3
             .putObject({
                 Bucket: 'genicon',
                 Body: Buffer.from(base64Image!, 'base64'),
-                Key: 'zzz', //generate random id;
+                Key: icon.id,
                 ContentEncoding: "base64",
                 ContentType: "image/gif",
             })
