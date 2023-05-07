@@ -14,8 +14,7 @@ const GeneratePage: NextPage = () => {
     });
     const [imageUrl, setImageUrl] = useState('');
     const session = useSession();
-
-    console.log(session);
+    
     const generateIcon = api.generate.generateIcon.useMutation({
         onSuccess(data) {
             if (!data.imageUrl) return;
@@ -27,6 +26,7 @@ const GeneratePage: NextPage = () => {
     generateIcon.mutateAsync
     function handleFormSubmit(e: React.FormEvent) {
         e.preventDefault();
+        if (form.prompt === '') return;
         generateIcon.mutate({
             prompt: form.prompt,
         })    
@@ -40,8 +40,7 @@ const GeneratePage: NextPage = () => {
             }));
         };
     }
-    const isLoggedIn = !!session.data
-
+    const isLoggedIn = !!session.data;
     return (
         <>
         <Head>
@@ -50,11 +49,11 @@ const GeneratePage: NextPage = () => {
             <link rel="icon" href="/favicon.ico" />
         </Head>
         <main className="flex min-h-screen flex-col items-center justify-center">
+            {!isLoggedIn && <Button onClick={ () => signIn().catch(console.error) }>Login</Button>}
+            {isLoggedIn && <Button onClick={ () => signOut().catch(console.error) }>Logout</Button>}
             <form className="flex flex-col gap-4"
                 onSubmit={ handleFormSubmit }
             >
-                {!isLoggedIn && <Button onClick={ () => signIn().catch(console.error) }>Login</Button>}
-                {isLoggedIn && <Button onClick={ () => signOut().catch(console.error) }>Logout</Button>}
                 <FormGroup>
                     <label>Prompt</label>
                     <Input
@@ -67,10 +66,11 @@ const GeneratePage: NextPage = () => {
                 </Button>
             </form>
             {imageUrl && <Image 
-                src={imageUrl}
+                src={ `data:image/jpeg;base64, ${imageUrl}` }
                 alt='Your generated image'
-                width='100'
-                height='100'
+                width='256'
+                height='256'
+                className="py-4"
             /> }
         </main>
         </>

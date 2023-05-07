@@ -1,25 +1,33 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Configuration, OpenAIApi } from 'openai';
-
+import { base64EncodedImage } from "./mocks/base64image";
 import {
   createTRPCRouter,
   protectedProcedure,
 } from "~/server/api/trpc";
 
+import AWS from 'aws-sdk'
 import { env } from "~/env.mjs";
 
-const generateIcon = async (prompt: string, openai: OpenAIApi): Promise<string | void> => {
+
+const s3 = new AWS.S3({
+    credentials: {
+        accessKeyId: env.S3_ACCESS_KEY,
+        secretAccessKey: env.S3_SECRET_KEY,
+    }
+})
+const generateIcon = async (prompt: string, openai: OpenAIApi): Promise<string | undefined> => {
     if (env.MOCK_DALLE === 'true') {
-        return 'https://static.vecteezy.com/system/resources/previews/018/764/128/original/chatgpt-logo-open-ai-icon-with-chatbot-artificial-intelligence-openai-chatbot-icon-chatgpt-openai-icon-artificial-intelligence-smart-ai-virtual-smart-assistant-bot-free-vector.jpg'
+        return base64EncodedImage; 
     } else {
         const response = await openai.createImage({
             prompt,
             n: 1,
             size: '256x256',
-            response_format: 'url',
+            response_format: "b64_json",
         })
-        return response.data.data[0]?.url;
+        return response.data.data[0]?.b64_json;
     }
 }
 
@@ -55,17 +63,24 @@ export const generateRouter = createTRPCRouter({
                 code: 'BAD_REQUEST',
                 message: 'Not enough credits',
             })
-        }
-        // FETCH REQ TO DALLE API
-        console.log(results);
+        }  
+        const base64Image = await generateIcon(input.prompt, openai);
+        console.log(base64Image);
 
-       
-        
-        const url = await generateIcon(input.prompt, openai);
-        console.log({url})
+        await s3
+            .putObject({
+                Bucket: 'genicon',
+                Body: Buffer.from(base64Image!, 'base64'),
+                Key: 'zzz', //generate random id;
+                ContentEncoding: "base64",
+                ContentType: "image/gif",
+            })
+            .promise();
+
+
         return {
             message:"Success",
-            imageUrl: url,
+            imageUrl: base64Image,
         }
     })
 });
