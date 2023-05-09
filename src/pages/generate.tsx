@@ -65,8 +65,8 @@ const GeneratePage: NextPage = () => {
                     Submit
                 </Button>
             </form>
-            {imageUrl && <Image 
-                src={ `data:image/jpeg;base64, ${imageUrl}` }
+            { imageUrl && <Image 
+                src={ imageUrl }
                 alt='Your generated image'
                 width='256'
                 height='256'

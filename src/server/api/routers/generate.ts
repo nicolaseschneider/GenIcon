@@ -17,6 +17,8 @@ const s3 = new AWS.S3({
         secretAccessKey: env.S3_SECRET_KEY,
     }
 })
+
+const BUCKET_NAME = 'genicon'
 const generateIcon = async (prompt: string, openai: OpenAIApi): Promise<string | undefined> => {
     if (env.MOCK_DALLE === 'true') {
         return base64EncodedImage; 
@@ -72,9 +74,8 @@ export const generateRouter = createTRPCRouter({
             }
         })
 
-        await s3
-            .putObject({
-                Bucket: 'genicon',
+        await s3.putObject({
+                Bucket: BUCKET_NAME,
                 Body: Buffer.from(base64Image!, 'base64'),
                 Key: icon.id,
                 ContentEncoding: "base64",
@@ -84,8 +85,8 @@ export const generateRouter = createTRPCRouter({
 
 
         return {
-            message:"Success",
-            imageUrl: base64Image,
+            message: "Success",
+            imageUrl: `https://${BUCKET_NAME}.s3.amazonaws.com/${icon.id}`,
         }
     })
 });

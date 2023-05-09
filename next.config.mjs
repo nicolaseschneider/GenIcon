@@ -10,8 +10,7 @@
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ['static.vecteezy.com',
-      'https://static.vecteezy.com/system/resources/previews/018/764/128/original/chatgpt-logo-open-ai-icon-with-chatbot-artificial-intelligence-openai-chatbot-icon-chatgpt-openai-icon-artificial-intelligence-smart-ai-virtual-smart-assistant-bot-free-vector.jpg'],
+    domains: ['genicon.s3','genicon.s3/*', 'genicon.s3.amazonaws.com']
   },
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you
